@@ -29,6 +29,23 @@ export type ButtonEvents = {
   onClick?(event: Event): void;
 };
 
+// use() 返回的是一个数组 [useSFC(name), useBEM(name), useI18N(name)]
+// 即这里的 sfc = useSFC('button')，因 useSFC 是多箭头函数
+// 所以，这里 sfc = (sfc) => {...}
+// 在此文件中最后返回 export sfc(Button)，即上面的入参 sfc 即为 这里的 Button 函数
+// 在 use 目录下的 sfc.ts 中如果入参sfc是 function(这里就是)，调用的是transformFunctionComponent，如下
+
+// function transformFunctionComponent(
+//   pure: FunctionComponent
+// ): VantComponentOptions {
+//   return {
+//     functional: true,
+//     props: pure.props,
+//     model: pure.model,
+//     render: (h, context): any =>
+//       pure(h, context.props, unifySlots(context), context)
+//   };
+// }
 const [sfc, bem] = use('button');
 
 function Button(
