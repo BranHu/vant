@@ -30,10 +30,10 @@ export type ButtonEvents = {
 };
 
 // use() 返回的是一个数组 [useSFC(name), useBEM(name), useI18N(name)]
-// 即这里的 sfc = useSFC('button')，因 useSFC 是多箭头函数
-// 所以，这里 sfc = (sfc) => {...}
-// 在此文件中最后返回 export sfc(Button)，即上面的入参 sfc 即为 这里的 Button 函数
-// 在 use 目录下的 sfc.ts 中如果入参sfc是 function(这里就是)，调用的是transformFunctionComponent，如下
+// 即这里的 sfc = useSFC('button')，因 useSFC 是多箭头函数(在utils目录中)，const useSFC = (name) => (sfc) => { ... return sfc}
+// 所以，这里 sfc = (sfc) => { ... return sfc}
+// 在此文件中的最后 export default sfc(Button)，即上面的入参 sfc 即为这里的 Button 函数
+// 在 use 目录下的 sfc.ts 中如果入参sfc是 function(这里就是 function Button(){})，调用的是 sfc = transformFunctionComponent(sfc);
 
 // function transformFunctionComponent(
 //   pure: FunctionComponent
@@ -46,6 +46,19 @@ export type ButtonEvents = {
 //       pure(h, context.props, unifySlots(context), context)
 //   };
 // }
+
+// 最后 
+// sfc = {
+//   functional: true,
+//   props: pure.props,
+//   model: pure.model,
+//   render: (h, context) => pure(h, context.props, unifySlots(context), context) ==> 这里调用 Button(h, context.props, unifySlots(context), context)
+//   name: 'button',
+//   install: install 方法 ==> vue.component
+// }
+
+// 同时注意这里通过 jsx 来写 html，其中很有特点的是 jsx 中的 <tag></tag>, 其实是 props 中的
+// tag
 const [sfc, bem] = use('button');
 
 function Button(
@@ -67,6 +80,11 @@ function Button(
     emit(ctx, 'touchstart', event);
   };
 
+  // BEM 方式来写 css(在utils目录中)
+  // b(['disabled', 'primary']) // 'button button--disabled button--primary'
+  // bem = useBEM('button')
+  // const useBEM = (name) => (el, mods) => { ... return mods ? [el, prefix(el, mods)] : el; }
+  // bem = (el, mods) => { ... return mods ? [el, prefix(el, mods)] : el; }
   const classes = [
     bem([
       type,
